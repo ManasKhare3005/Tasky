@@ -1,0 +1,219 @@
+.tasks-section {
+  margin-bottom: 32px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.section-count {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.task-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.task-card:hover {
+  border-color: var(--accent);
+  transform: translateX(4px);
+}
+
+.task-card.completed {
+  opacity: 0.5;
+}
+
+.task-card.completed .task-name {
+  text-decoration: line-through;
+}
+
+.task-checkbox {
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--text-secondary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.task-card.completed .task-checkbox {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.task-checkbox svg {
+  width: 14px;
+  height: 14px;
+  stroke: var(--bg-primary);
+  stroke-width: 3;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.task-card.completed .task-checkbox svg {
+  opacity: 1;
+}
+
+.task-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-name {
+  font-size: 15px;
+  font-weight: 400;
+  margin-bottom: 4px;
+  word-break: break-word;
+}
+
+.task-meta {
+  font-size: 11px;
+  color: var(--text-secondary);
+  display: flex;
+  gap: 12px;
+}
+
+.task-time {
+  color: var(--accent);
+}
+
+.task-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  background: var(--accent-dim);
+  color: var(--accent);
+  border-radius: 100px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.task-badge.oneoff {
+  background: var(--warning-dim);
+  color: var(--warning);
+}
+
+.task-badge.overdue {
+  background: var(--danger-dim);
+  color: var(--danger);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Overdue task card */
+.task-card.overdue {
+  border-color: var(--danger);
+  background: linear-gradient(135deg, var(--bg-card), var(--danger-dim));
+}
+
+.task-card.overdue .task-checkbox {
+  border-color: var(--danger);
+}
+
+.task-card.overdue:hover {
+  border-color: var(--danger);
+  box-shadow: 0 0 20px var(--danger-dim);
+}
+
+.task-time.overdue {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.task-delete {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0;
+}
+
+.task-card:hover .task-delete {
+  opacity: 1;
+}
+
+.task-delete:hover {
+  background: var(--danger-dim);
+  color: var(--danger);
+}
+
+.task-arrow {
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.task-card:hover .task-arrow {
+  color: var(--accent);
+  transform: translateX(4px);
+}
+
+.add-task-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--bg-card);
+  border: 2px dashed var(--text-secondary);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  font-family: 'Space Mono', monospace;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.add-task-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+}
+
+.empty-state svg {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px;
+  opacity: 0.3;
+}
