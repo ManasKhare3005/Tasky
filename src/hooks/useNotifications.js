@@ -2,12 +2,26 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 
 export const useNotifications = (settings, getOverdueTasks, getPendingTasks, userId) => {
   const [permission, setPermission] = useState('default')
+  const [swRegistration, setSwRegistration] = useState(null)
   const getKey = (key) => `focus_${userId}_${key}`
   const notificationIntervalRef = useRef(null)
 
+  // Register service worker and check permission on mount
   useEffect(() => {
     if ('Notification' in window) {
       setPermission(Notification.permission)
+    }
+
+    // Register our custom service worker for notifications
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then((registration) => {
+          console.log('SW registered:', registration)
+          setSwRegistration(registration)
+        })
+        .catch((error) => {
+          console.error('SW registration failed:', error)
+        })
     }
   }, [])
 
@@ -23,10 +37,7 @@ export const useNotifications = (settings, getOverdueTasks, getPendingTasks, use
       
       if (result === 'granted') {
         // Send a test notification to confirm it works
-        new Notification('TaskMeUp', {
-          body: 'Notifications are now enabled! 🎉',
-          icon: '/icon-192.png'
-        })
+        showNotification('TaskMeUp', 'Notifications are now enabled! 🎉')
       }
       
       return result === 'granted'
@@ -42,8 +53,11 @@ export const useNotifications = (settings, getOverdueTasks, getPendingTasks, use
       return
     }
 
-    try {
-      const notification = new Notification(title, {
+    console.log('Showing notification:', title, body)
+
+    // Try Service Worker first (required for mobile)
+    if (swRegistration) {
+      swRegistration.showNotification(title, {
         body,
         icon: '/icon-192.png',
         badge: '/icon-192.png',
@@ -51,18 +65,51 @@ export const useNotifications = (settings, getOverdueTasks, getPendingTasks, use
         renotify: true,
         requireInteraction: true,
         vibrate: [200, 100, 200]
+      }).then(() => {
+        console.log('Notification shown via SW')
+      }).catch((error) => {
+        console.error('SW notification error:', error)
+        // Fallback to direct notification
+        tryDirectNotification(title, body, tag)
       })
+    } else if (navigator.serviceWorker && navigator.serviceWorker.ready) {
+      // Wait for SW to be ready
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.showNotification(title, {
+          body,
+          icon: '/icon-192.png',
+          badge: '/icon-192.png',
+          tag,
+          renotify: true,
+          vibrate: [200, 100, 200]
+        })
+      }).catch((error) => {
+        console.error('SW ready notification error:', error)
+        tryDirectNotification(title, body, tag)
+      })
+    } else {
+      // Fallback for desktop
+      tryDirectNotification(title, body, tag)
+    }
+  }, [permission, swRegistration])
 
+  const tryDirectNotification = (title, body, tag) => {
+    try {
+      const notification = new Notification(title, {
+        body,
+        icon: '/icon-192.png',
+        tag,
+        renotify: true
+      })
       notification.onclick = () => {
         window.focus()
         notification.close()
       }
-
-      console.log('Notification sent:', title)
+      console.log('Direct notification shown')
     } catch (error) {
-      console.error('Error showing notification:', error)
+      console.error('Direct notification error:', error)
     }
-  }, [permission])
+  }
 
   const checkAndNotify = useCallback(() => {
     console.log('Checking notifications...', { 
@@ -71,7 +118,6 @@ export const useNotifications = (settings, getOverdueTasks, getPendingTasks, use
     })
 
     if (permission !== 'granted' || !settings.notificationsEnabled) {
-      console.log('Notifications not enabled or permission not granted')
       return
     }
 
@@ -89,7 +135,7 @@ export const useNotifications = (settings, getOverdueTasks, getPendingTasks, use
     
     console.log('Tasks:', { overdue: overdueTasks.length, pending: pendingTasks.length })
 
-    // Priority 1: Overdue tasks (more urgent)
+    // Priority 1: Overdue tasks
     if (overdueTasks.length > 0) {
       const lastOverdueReminder = localStorage.getItem(getKey('last_overdue_reminder'))
       const now = Date.now()
@@ -139,10 +185,10 @@ export const useNotifications = (settings, getOverdueTasks, getPendingTasks, use
       clearInterval(notificationIntervalRef.current)
     }
 
-    // Check immediately on mount
+    // Check after a short delay
     const timer = setTimeout(() => {
       checkAndNotify()
-    }, 2000) // Small delay to ensure everything is loaded
+    }, 3000)
 
     // Then check every minute
     notificationIntervalRef.current = setInterval(checkAndNotify, 60000)
