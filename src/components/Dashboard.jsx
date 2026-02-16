@@ -44,27 +44,26 @@ const Dashboard = ({ user, onLogout }) => {
     return () => clearInterval(interval)
   }, [])
 
-  // Helper function to check if task is overdue
-  const isTaskOverdue = useCallback((task) => {
+  // Helper function to check if task is overdue - no memoization for accurate time checks
+  const isTaskOverdue = (task) => {
     if (!task.time) return false
     
     const now = new Date()
     const [hours, minutes] = task.time.split(':').map(Number)
     const taskTime = new Date()
-    taskTime.setHours(hours, minutes, 0, 0)
+    taskTime.setHours(hours, minutes, 59, 999) // Give 1 minute grace period
     
     if (task.type === 'oneoff' && task.date) {
-      const taskDate = new Date(task.date)
+      const taskDate = new Date(task.date + 'T00:00:00')
       const today = new Date()
       today.setHours(0, 0, 0, 0)
-      taskDate.setHours(0, 0, 0, 0)
       
       if (taskDate < today) return true
       if (taskDate > today) return false
     }
     
     return now > taskTime
-  }, [currentTime]) // Recalculate when currentTime changes
+  }
 
   // Get today's tasks
   const todayTasks = useMemo(() => {
@@ -79,20 +78,16 @@ const Dashboard = ({ user, onLogout }) => {
       }
       return false
     })
-  }, [tasks, completedToday, currentTime])
+  }, [tasks, completedToday])
 
-  // Get overdue tasks
-  const overdueTasks = useMemo(() => {
-    return todayTasks.filter(task => {
-      if (completedToday.has(task.id)) return false
-      return isTaskOverdue(task)
-    })
-  }, [todayTasks, completedToday, isTaskOverdue, currentTime])
+  // Get overdue tasks - recalculate on every render triggered by currentTime
+  const overdueTasks = todayTasks.filter(task => {
+    if (completedToday.has(task.id)) return false
+    return isTaskOverdue(task)
+  })
 
   // Get pending tasks
-  const pendingTasks = useMemo(() => {
-    return todayTasks.filter(t => !completedToday.has(t.id))
-  }, [todayTasks, completedToday])
+  const pendingTasks = todayTasks.filter(t => !completedToday.has(t.id))
 
   // Calculate progress
   const progress = useMemo(() => {
