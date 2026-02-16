@@ -20,6 +20,15 @@ export const useNotifications = (settings, getOverdueTasks, getPendingTasks, use
     try {
       const result = await Notification.requestPermission()
       setPermission(result)
+      
+      if (result === 'granted') {
+        // Send a test notification to confirm it works
+        new Notification('TaskMeUp', {
+          body: 'Notifications are now enabled! 🎉',
+          icon: '/icon-192.png'
+        })
+      }
+      
       return result === 'granted'
     } catch (error) {
       console.error('Notification permission error:', error)
@@ -27,47 +36,65 @@ export const useNotifications = (settings, getOverdueTasks, getPendingTasks, use
     }
   }
 
-  const showNotification = useCallback((title, body, tag = 'focus-reminder') => {
-    if (permission !== 'granted') return
+  const showNotification = useCallback((title, body, tag = 'taskmeup-reminder') => {
+    if (permission !== 'granted') {
+      console.log('Notification permission not granted')
+      return
+    }
 
-    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-      navigator.serviceWorker.controller.postMessage({
-        type: 'SHOW_NOTIFICATION',
-        title,
-        body,
-        tag
-      })
-    } else {
-      new Notification(title, {
+    try {
+      const notification = new Notification(title, {
         body,
         icon: '/icon-192.png',
         badge: '/icon-192.png',
-        vibrate: [200, 100, 200],
         tag,
-        renotify: true
+        renotify: true,
+        requireInteraction: true,
+        vibrate: [200, 100, 200]
       })
+
+      notification.onclick = () => {
+        window.focus()
+        notification.close()
+      }
+
+      console.log('Notification sent:', title)
+    } catch (error) {
+      console.error('Error showing notification:', error)
     }
   }, [permission])
 
   const checkAndNotify = useCallback(() => {
-    if (permission !== 'granted' || !settings.notificationsEnabled) return
+    console.log('Checking notifications...', { 
+      permission, 
+      notificationsEnabled: settings.notificationsEnabled 
+    })
+
+    if (permission !== 'granted' || !settings.notificationsEnabled) {
+      console.log('Notifications not enabled or permission not granted')
+      return
+    }
 
     // Check active hours
     if (settings.activeHoursOnly) {
       const hour = new Date().getHours()
-      if (hour < 8 || hour >= 22) return
+      if (hour < 8 || hour >= 22) {
+        console.log('Outside active hours')
+        return
+      }
     }
 
     const overdueTasks = getOverdueTasks()
     const pendingTasks = getPendingTasks()
     
+    console.log('Tasks:', { overdue: overdueTasks.length, pending: pendingTasks.length })
+
     // Priority 1: Overdue tasks (more urgent)
     if (overdueTasks.length > 0) {
       const lastOverdueReminder = localStorage.getItem(getKey('last_overdue_reminder'))
       const now = Date.now()
       let interval = settings.reminderInterval * 60 * 1000
 
-      // Aggressive mode - reminder every half interval for overdue tasks
       if (settings.aggressiveMode) {
         interval = interval / 2
       }
@@ -79,11 +106,11 @@ export const useNotifications = (settings, getOverdueTasks, getPendingTasks, use
         showNotification(
           `⚠️ ${overdueTasks.length} overdue task${overdueTasks.length > 1 ? 's' : ''}!`,
           `${taskNames}${moreText} — Complete now!`,
-          'focus-overdue'
+          'taskmeup-overdue'
         )
         localStorage.setItem(getKey('last_overdue_reminder'), now.toString())
       }
-      return // Don't send regular reminder if we sent overdue reminder
+      return
     }
 
     // Priority 2: Regular pending tasks
@@ -108,23 +135,25 @@ export const useNotifications = (settings, getOverdueTasks, getPendingTasks, use
 
   // Set up periodic checking
   useEffect(() => {
-    // Clear any existing interval
     if (notificationIntervalRef.current) {
       clearInterval(notificationIntervalRef.current)
     }
 
     // Check immediately on mount
-    checkAndNotify()
+    const timer = setTimeout(() => {
+      checkAndNotify()
+    }, 2000) // Small delay to ensure everything is loaded
 
-    // Then check every minute (the actual interval logic is in checkAndNotify)
+    // Then check every minute
     notificationIntervalRef.current = setInterval(checkAndNotify, 60000)
     
     return () => {
+      clearTimeout(timer)
       if (notificationIntervalRef.current) {
         clearInterval(notificationIntervalRef.current)
       }
     }
   }, [checkAndNotify])
 
-  return { permission, requestPermission, showNotification }
+  return { permission, requestPermission, showNotification, checkAndNotify }
 }

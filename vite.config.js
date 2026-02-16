@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: 'Focus - Daily Accountability',
-        short_name: 'Focus',
+        name: 'TaskMeUp - Daily Accountability',
+        short_name: 'TaskMeUp',
         description: 'Stay on track with your daily goals',
         theme_color: '#0a0a0a',
         background_color: '#0a0a0a',
@@ -31,6 +31,9 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg}']
+      },
+      devOptions: {
+        enabled: true
       }
     })
   ]

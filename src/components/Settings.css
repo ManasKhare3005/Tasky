@@ -56,6 +56,29 @@
   color: var(--accent);
 }
 
+.notification-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.test-notification-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  color: var(--accent);
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.test-notification-btn:hover {
+  background: var(--accent-dim);
+}
+
 .interval-selector {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

@@ -1,6 +1,6 @@
 import './Settings.css'
 
-const Settings = ({ settings, onUpdateSetting, notificationPermission, onRequestPermission }) => {
+const Settings = ({ settings, onUpdateSetting, notificationPermission, onRequestPermission, onTestNotification }) => {
   const intervals = [
     { value: 15, label: '15 min' },
     { value: 30, label: '30 min' },
@@ -15,6 +15,8 @@ const Settings = ({ settings, onUpdateSetting, notificationPermission, onRequest
     }
   }
 
+  const isEnabled = notificationPermission === 'granted' && settings.notificationsEnabled
+
   return (
     <section className="settings-section">
       <div className="section-header">
@@ -24,21 +26,46 @@ const Settings = ({ settings, onUpdateSetting, notificationPermission, onRequest
       <div className="settings-card">
         <div className="form-group" style={{ marginBottom: 0 }}>
           <label className="form-label">Notifications</label>
-          <button 
-            className={`notification-btn ${notificationPermission === 'granted' ? 'granted' : ''}`}
-            onClick={handleNotificationClick}
-            disabled={notificationPermission === 'denied'}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-            </svg>
-            {notificationPermission === 'granted' 
-              ? 'Notifications Enabled' 
-              : notificationPermission === 'denied'
-              ? 'Notifications Blocked'
-              : 'Enable Push Notifications'}
-          </button>
+          {notificationPermission !== 'granted' ? (
+            <button 
+              className="notification-btn"
+              onClick={handleNotificationClick}
+              disabled={notificationPermission === 'denied'}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+              {notificationPermission === 'denied' 
+                ? 'Notifications Blocked (check browser settings)' 
+                : 'Enable Push Notifications'}
+            </button>
+          ) : (
+            <div className="notification-controls">
+              <div className="settings-row">
+                <div className="settings-info">
+                  <h3>Push Notifications</h3>
+                  <p>{isEnabled ? 'You will receive reminders' : 'Reminders are paused'}</p>
+                </div>
+                <label className="toggle-switch">
+                  <input 
+                    type="checkbox" 
+                    checked={settings.notificationsEnabled}
+                    onChange={e => onUpdateSetting('notificationsEnabled', e.target.checked)}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </div>
+              {isEnabled && onTestNotification && (
+                <button 
+                  className="test-notification-btn"
+                  onClick={onTestNotification}
+                >
+                  Send Test Notification
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
