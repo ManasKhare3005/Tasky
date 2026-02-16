@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useTasks } from '../hooks/useTasks'
 import { useSettings } from '../hooks/useSettings'
 import { useNotifications } from '../hooks/useNotifications'
@@ -11,6 +11,7 @@ import './Dashboard.css'
 
 const Dashboard = ({ user, onLogout }) => {
   const [showAddModal, setShowAddModal] = useState(false)
+  const [, setTick] = useState(0) // Force re-render trigger
   
   const { 
     tasks, 
@@ -34,12 +35,25 @@ const Dashboard = ({ user, onLogout }) => {
   const getOverdueTasksMemo = useCallback(() => getOverdueTasks(), [tasks, completedToday])
   const getPendingTasksMemo = useCallback(() => getPendingTasks(), [tasks, completedToday])
   
-  const { permission, requestPermission } = useNotifications(
+  const { permission, requestPermission, showNotification, checkAndNotify } = useNotifications(
     settings, 
     getOverdueTasksMemo,
     getPendingTasksMemo,
     user.id
   )
+
+  // Auto-refresh every minute to update overdue status
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTick(t => t + 1) // Force re-render to update overdue status
+    }, 60000) // Every minute
+
+    return () => clearInterval(interval)
+  }, [])
+
+  const handleTestNotification = () => {
+    showNotification('Test Notification', 'TaskMeUp notifications are working! 🎉')
+  }
 
   const progress = getProgress()
   const todayTasks = getTodayTasks()
@@ -112,6 +126,7 @@ const Dashboard = ({ user, onLogout }) => {
         onUpdateSetting={updateSetting}
         notificationPermission={permission}
         onRequestPermission={requestPermission}
+        onTestNotification={handleTestNotification}
       />
 
       {showAddModal && (
