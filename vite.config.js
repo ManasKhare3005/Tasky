@@ -10,11 +10,11 @@ export default defineConfig({
       injectRegister: 'auto',
       includeAssets: ['icon-192.png', 'icon-512.png'],
       manifest: {
-        name: 'TaskMeUp - Daily Accountability',
-        short_name: 'TaskMeUp',
-        description: 'Stay on track with your daily goals',
-        theme_color: '#0a0a0a',
-        background_color: '#0a0a0a',
+        name: 'TaskItUp - Get It Done',
+        short_name: 'TaskItUp',
+        description: 'Your daily accountability partner',
+        theme_color: '#6c5ce7',
+        background_color: '#0c0c0f',
         display: 'standalone',
         orientation: 'portrait',
         start_url: '/',
@@ -22,12 +22,14 @@ export default defineConfig({
           {
             src: 'icon-192.png',
             sizes: '192x192',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any maskable'
           },
           {
             src: 'icon-512.png',
             sizes: '512x512',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any maskable'
           }
         ]
       },

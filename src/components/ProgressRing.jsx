@@ -9,8 +9,9 @@ const ProgressRing = ({ percent }) => {
       <svg className="progress-ring" width="180" height="180">
         <defs>
           <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#00ff88"/>
-            <stop offset="100%" stopColor="#00ccff"/>
+            <stop offset="0%" stopColor="#6c5ce7"/>
+            <stop offset="50%" stopColor="#a29bfe"/>
+            <stop offset="100%" stopColor="#00d9a0"/>
           </linearGradient>
         </defs>
         <circle className="progress-ring-bg" cx="90" cy="90" r="80"/>

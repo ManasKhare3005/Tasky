@@ -1,17 +1,25 @@
 :root {
-  --bg-primary: #0a0a0a;
-  --bg-secondary: #141414;
-  --bg-card: #1a1a1a;
-  --text-primary: #f5f5f5;
-  --text-secondary: #888;
-  --accent: #00ff88;
-  --accent-dim: #00ff8833;
-  --danger: #ff4444;
-  --danger-dim: #ff444433;
-  --warning: #ffaa00;
-  --warning-dim: #ffaa0033;
-  --radius: 16px;
-  --radius-sm: 8px;
+  --bg-primary: #0c0c0f;
+  --bg-secondary: #13131a;
+  --bg-card: #1c1c26;
+  --bg-card-hover: #242432;
+  --text-primary: #f8f8fc;
+  --text-secondary: #8888a0;
+  --accent: #6c5ce7;
+  --accent-light: #a29bfe;
+  --accent-dim: rgba(108, 92, 231, 0.15);
+  --accent-glow: rgba(108, 92, 231, 0.4);
+  --success: #00d9a0;
+  --success-dim: rgba(0, 217, 160, 0.15);
+  --danger: #ff6b6b;
+  --danger-dim: rgba(255, 107, 107, 0.15);
+  --warning: #ffc048;
+  --warning-dim: rgba(255, 192, 72, 0.15);
+  --radius: 20px;
+  --radius-sm: 12px;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 30px var(--accent-glow);
 }
 
 * {
@@ -29,17 +37,19 @@ body {
   overflow-x: hidden;
 }
 
-/* Background grid */
+/* Animated gradient background */
 .bg-grid {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
-    linear-gradient(rgba(0, 255, 136, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 255, 136, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
+  background: 
+    radial-gradient(ellipse at 20% 20%, rgba(108, 92, 231, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(0, 217, 160, 0.05) 0%, transparent 50%),
+    linear-gradient(rgba(108, 92, 231, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(108, 92, 231, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
   pointer-events: none;
   z-index: 0;
 }
@@ -49,8 +59,8 @@ body {
   z-index: 1;
   max-width: 480px;
   margin: 0 auto;
-  padding: 20px;
-  padding-bottom: 100px;
+  padding: 16px 20px;
+  padding-bottom: 120px;
 }
 
 /* Form elements */
@@ -64,24 +74,27 @@ body {
   text-transform: uppercase;
   letter-spacing: 2px;
   color: var(--text-secondary);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  font-weight: 500;
 }
 
 .form-input {
   width: 100%;
-  padding: 14px 16px;
+  padding: 16px 18px;
   background: var(--bg-card);
-  border: 1px solid transparent;
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: var(--radius-sm);
   color: var(--text-primary);
   font-family: 'Space Mono', monospace;
   font-size: 15px;
-  transition: border-color 0.2s ease;
+  transition: all 0.25s ease;
+  box-shadow: var(--shadow-sm);
 }
 
 .form-input:focus {
   outline: none;
   border-color: var(--accent);
+  box-shadow: var(--shadow-sm), 0 0 0 3px var(--accent-dim);
 }
 
 .form-input::placeholder {
@@ -90,32 +103,41 @@ body {
 
 .submit-btn {
   width: 100%;
-  padding: 16px;
-  background: var(--accent);
+  padding: 18px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
   border: none;
   border-radius: var(--radius-sm);
-  color: var(--bg-primary);
+  color: white;
   font-family: 'Syne', sans-serif;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
+  box-shadow: var(--shadow-md), var(--shadow-glow);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .submit-btn:hover {
-  transform: scale(1.02);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md), 0 0 40px var(--accent-glow);
+}
+
+.submit-btn:active {
+  transform: translateY(0);
 }
 
 .submit-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
+  box-shadow: var(--shadow-sm);
 }
 
 /* Animations */
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+  50% { opacity: 0.6; }
 }
 
 @keyframes slideUp {
@@ -138,4 +160,14 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }

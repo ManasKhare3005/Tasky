@@ -101,7 +101,25 @@ export const useAuth = () => {
 
       return { success: true }
     } catch (error) {
-      return { success: false, error: 'Failed to sign in with Google' }
+      console.error('Google sign-in error:', error)
+      
+      let message = 'Failed to sign in with Google'
+      
+      if (error.code === 'auth/popup-closed-by-user') {
+        message = 'Sign-in popup was closed'
+      } else if (error.code === 'auth/popup-blocked') {
+        message = 'Pop-up blocked by browser. Please allow pop-ups.'
+      } else if (error.code === 'auth/unauthorized-domain') {
+        message = 'This domain is not authorized. Add it in Firebase Console.'
+      } else if (error.code === 'auth/operation-not-allowed') {
+        message = 'Google sign-in is not enabled. Enable it in Firebase Console.'
+      } else if (error.code === 'auth/cancelled-popup-request') {
+        message = 'Sign-in cancelled'
+      } else if (error.message) {
+        message = error.message
+      }
+      
+      return { success: false, error: message }
     }
   }
 

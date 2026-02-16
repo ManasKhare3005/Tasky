@@ -31,7 +31,7 @@ const Header = ({ user, onLogout, onExport }) => {
 
   return (
     <header className="header">
-      <div className="logo">FOCUS</div>
+      <div className="logo">TaskItUp</div>
       <div className="header-right">
         <div className="date-display">{formatDate()}</div>
         <div className="user-menu-container" ref={menuRef}>

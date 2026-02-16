@@ -2,22 +2,24 @@
   position: relative;
   width: 180px;
   height: 180px;
+  animation: float 4s ease-in-out infinite;
 }
 
 .progress-ring {
   transform: rotate(-90deg);
+  filter: drop-shadow(0 0 20px var(--accent-dim));
 }
 
 .progress-ring-bg {
   fill: none;
   stroke: var(--bg-card);
-  stroke-width: 8;
+  stroke-width: 10;
 }
 
 .progress-ring-fill {
   fill: none;
   stroke: url(#progressGradient);
-  stroke-width: 8;
+  stroke-width: 10;
   stroke-linecap: round;
   stroke-dasharray: 502;
   stroke-dashoffset: 502;
@@ -37,6 +39,10 @@
   font-size: 48px;
   font-weight: 800;
   line-height: 1;
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .progress-label {
@@ -44,5 +50,5 @@
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 2px;
-  margin-top: 4px;
+  margin-top: 6px;
 }

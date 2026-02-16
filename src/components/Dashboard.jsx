@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useTasks } from '../hooks/useTasks'
 import { useSettings } from '../hooks/useSettings'
 import { useNotifications } from '../hooks/useNotifications'
+import { usePushNotifications } from '../hooks/usePushNotifications'
 import Header from './Header'
 import ProgressRing from './ProgressRing'
 import TaskList from './TaskList'
@@ -26,6 +27,13 @@ const Dashboard = ({ user, onLogout }) => {
   } = useTasks(user.id, user.isGuest)
   
   const { settings, updateSetting } = useSettings(user.id)
+
+  // Push notifications (FCM) for background notifications
+  const {
+    pushEnabled,
+    requestPushPermission,
+    disablePushNotifications
+  } = usePushNotifications(user.id, user.isGuest)
 
   // Auto-refresh every minute to update overdue status
   useEffect(() => {
@@ -185,6 +193,10 @@ const Dashboard = ({ user, onLogout }) => {
         notificationPermission={permission}
         onRequestPermission={requestPermission}
         onTestNotification={handleTestNotification}
+        pushEnabled={pushEnabled}
+        onRequestPushPermission={requestPushPermission}
+        onDisablePush={disablePushNotifications}
+        isGuest={user.isGuest}
       />
 
       {showAddModal && (

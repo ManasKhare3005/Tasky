@@ -10,26 +10,29 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 24px;
+  gap: 28px;
+  background: var(--bg-primary);
 }
 
 .loading-logo {
   font-family: 'Syne', sans-serif;
-  font-size: 48px;
+  font-size: 42px;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--accent), #00ccff);
+  background: linear-gradient(135deg, var(--accent), var(--accent-light), var(--success));
+  background-size: 200% 200%;
+  animation: shimmer 2s ease infinite;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .loading-spinner {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border: 3px solid var(--bg-card);
   border-top-color: var(--accent);
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {

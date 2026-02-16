@@ -1,6 +1,16 @@
 import './Settings.css'
 
-const Settings = ({ settings, onUpdateSetting, notificationPermission, onRequestPermission, onTestNotification }) => {
+const Settings = ({ 
+  settings, 
+  onUpdateSetting, 
+  notificationPermission, 
+  onRequestPermission, 
+  onTestNotification,
+  pushEnabled,
+  onRequestPushPermission,
+  onDisablePush,
+  isGuest
+}) => {
   const intervals = [
     { value: 15, label: '15 min' },
     { value: 30, label: '30 min' },
@@ -15,6 +25,14 @@ const Settings = ({ settings, onUpdateSetting, notificationPermission, onRequest
     }
   }
 
+  const handlePushToggle = async () => {
+    if (pushEnabled) {
+      onDisablePush()
+    } else {
+      await onRequestPushPermission()
+    }
+  }
+
   const isEnabled = notificationPermission === 'granted' && settings.notificationsEnabled
 
   return (
@@ -23,9 +41,41 @@ const Settings = ({ settings, onUpdateSetting, notificationPermission, onRequest
         <h2 className="section-title">Settings</h2>
       </div>
 
+      {/* Background Push Notifications - only for logged in users */}
+      {!isGuest && (
+        <div className="settings-card featured">
+          <div className="settings-row">
+            <div className="settings-info">
+              <h3>🔔 Background Notifications</h3>
+              <p>{pushEnabled ? 'You\'ll get reminders even when app is closed' : 'Get reminders even when app is closed'}</p>
+            </div>
+            <label className="toggle-switch">
+              <input 
+                type="checkbox" 
+                checked={pushEnabled}
+                onChange={handlePushToggle}
+              />
+              <span className="toggle-slider"></span>
+            </label>
+          </div>
+          {!pushEnabled && (
+            <p className="settings-hint">Recommended for best experience</p>
+          )}
+        </div>
+      )}
+
+      {isGuest && (
+        <div className="settings-card">
+          <div className="guest-notice">
+            <span>💡</span>
+            <p>Sign up to enable background notifications that work even when the app is closed!</p>
+          </div>
+        </div>
+      )}
+
       <div className="settings-card">
         <div className="form-group" style={{ marginBottom: 0 }}>
-          <label className="form-label">Notifications</label>
+          <label className="form-label">In-App Notifications</label>
           {notificationPermission !== 'granted' ? (
             <button 
               className="notification-btn"
@@ -38,14 +88,14 @@ const Settings = ({ settings, onUpdateSetting, notificationPermission, onRequest
               </svg>
               {notificationPermission === 'denied' 
                 ? 'Notifications Blocked (check browser settings)' 
-                : 'Enable Push Notifications'}
+                : 'Enable Notifications'}
             </button>
           ) : (
             <div className="notification-controls">
               <div className="settings-row">
                 <div className="settings-info">
-                  <h3>Push Notifications</h3>
-                  <p>{isEnabled ? 'You will receive reminders' : 'Reminders are paused'}</p>
+                  <h3>In-App Reminders</h3>
+                  <p>{isEnabled ? 'Active when app is open' : 'Paused'}</p>
                 </div>
                 <label className="toggle-switch">
                   <input 
@@ -107,7 +157,7 @@ const Settings = ({ settings, onUpdateSetting, notificationPermission, onRequest
         <div className="settings-row">
           <div className="settings-info">
             <h3>Aggressive Mode</h3>
-            <p>Increase frequency when tasks are pending</p>
+            <p>Double reminder frequency for overdue tasks</p>
           </div>
           <label className="toggle-switch">
             <input 

@@ -57,8 +57,8 @@ const AuthScreen = ({ onLogin, onSignup, onGoogleLogin, onGuest }) => {
   return (
     <div className="auth-screen">
       <div className="auth-container">
-        <div className="auth-logo">FOCUS</div>
-        <p className="auth-tagline">Your daily accountability partner</p>
+        <div className="auth-logo">TaskItUp</div>
+        <p className="auth-tagline">Get it done. Stay on track.</p>
 
         <div className="auth-tabs">
           <button 

@@ -12,7 +12,7 @@ function App() {
       <>
         <div className="bg-grid" />
         <div className="loading-screen">
-          <div className="loading-logo">FOCUS</div>
+          <div className="loading-logo">TaskItUp</div>
           <div className="loading-spinner"></div>
         </div>
       </>

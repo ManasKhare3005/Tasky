@@ -2,16 +2,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 32px;
-  padding-top: 20px;
+  margin-bottom: 28px;
+  padding-top: 16px;
 }
 
 .logo {
   font-family: 'Syne', sans-serif;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 800;
-  letter-spacing: -1px;
-  background: linear-gradient(135deg, var(--accent), #00ccff);
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -20,14 +20,17 @@
 .header-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
 }
 
 .date-display {
   font-size: 12px;
   color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
+  background: var(--bg-card);
+  padding: 8px 14px;
+  border-radius: 20px;
 }
 
 .user-menu-container {
@@ -42,9 +45,9 @@
 }
 
 .user-avatar {
-  width: 36px;
-  height: 36px;
-  background: linear-gradient(135deg, var(--accent), #00ccff);
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -52,38 +55,40 @@
   font-family: 'Syne', sans-serif;
   font-weight: 700;
   font-size: 14px;
-  color: var(--bg-primary);
-  transition: transform 0.2s ease;
+  color: white;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px var(--accent-dim);
 }
 
 .user-avatar:hover {
-  transform: scale(1.05);
+  transform: scale(1.08);
+  box-shadow: var(--shadow-glow);
 }
 
 .user-avatar.large {
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   font-size: 18px;
 }
 
 .user-menu {
   position: absolute;
-  top: 50px;
+  top: 54px;
   right: 0;
   width: 280px;
   background: var(--bg-secondary);
-  border: 1px solid var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius);
   padding: 16px;
   z-index: 100;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-md);
   animation: menuSlide 0.2s ease;
 }
 
 .user-menu-header {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   margin-bottom: 16px;
 }
 
@@ -111,13 +116,13 @@
 
 .user-menu-divider {
   height: 1px;
-  background: var(--bg-card);
-  margin: 12px 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  margin: 14px 0;
 }
 
 .user-menu-item {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   background: transparent;
   border: none;
   border-radius: var(--radius-sm);

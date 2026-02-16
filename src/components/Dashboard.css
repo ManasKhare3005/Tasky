@@ -2,7 +2,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 40px;
+  margin-bottom: 32px;
+  padding: 24px 0;
 }
 
 .status-message {
@@ -10,44 +11,56 @@
   margin-top: 20px;
   padding: 12px 24px;
   background: var(--accent-dim);
-  border: 1px solid var(--accent);
+  border: 1px solid rgba(108, 92, 231, 0.3);
   border-radius: 100px;
   font-size: 13px;
-  color: var(--accent);
-  animation: pulse 2s ease-in-out infinite;
+  color: var(--accent-light);
+  animation: pulse 2.5s ease-in-out infinite;
+  box-shadow: 0 4px 20px var(--accent-dim);
 }
 
 .status-message.warning {
   background: var(--warning-dim);
-  border-color: var(--warning);
+  border-color: rgba(255, 192, 72, 0.3);
   color: var(--warning);
+  box-shadow: 0 4px 20px var(--warning-dim);
 }
 
 .status-message.danger {
   background: var(--danger-dim);
-  border-color: var(--danger);
+  border-color: rgba(255, 107, 107, 0.3);
   color: var(--danger);
+  box-shadow: 0 4px 20px var(--danger-dim);
 }
 
 .today-summary {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
-  margin-bottom: 32px;
+  margin-bottom: 28px;
 }
 
 .summary-card {
   background: var(--bg-card);
   border-radius: var(--radius);
-  padding: 16px;
+  padding: 20px 16px;
   text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.25s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 .summary-value {
   font-family: 'Syne', sans-serif;
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 800;
-  color: var(--accent);
+  color: var(--success);
+  line-height: 1;
 }
 
 .summary-value.pending {
@@ -58,6 +71,6 @@
   font-size: 10px;
   color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-top: 4px;
+  letter-spacing: 1.5px;
+  margin-top: 8px;
 }

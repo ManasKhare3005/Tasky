@@ -9,6 +9,31 @@
   border-radius: var(--radius);
   padding: 20px;
   margin-bottom: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.settings-card.featured {
+  background: linear-gradient(135deg, var(--accent-dim), var(--bg-card));
+  border-color: var(--accent);
+}
+
+.settings-hint {
+  font-size: 12px;
+  color: var(--accent-light);
+  margin-top: 12px;
+  opacity: 0.8;
+}
+
+.guest-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.guest-notice span {
+  font-size: 20px;
 }
 
 .settings-row {

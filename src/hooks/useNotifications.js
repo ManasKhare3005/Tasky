@@ -24,7 +24,7 @@ export const useNotifications = (settings, getOverdueTasks, getPendingTasks, use
       if (result === 'granted') {
         // Send test notification
         setTimeout(() => {
-          showNotification('TaskMeUp', 'Notifications are now enabled! 🎉')
+          showNotification('TaskItUp', 'Notifications are now enabled! 🎉')
         }, 500)
       }
       
@@ -35,11 +35,14 @@ export const useNotifications = (settings, getOverdueTasks, getPendingTasks, use
     }
   }
 
-  const showNotification = useCallback(async (title, body, tag = 'taskmeup-reminder') => {
+  const showNotification = useCallback(async (title, body, tag = null) => {
     if (permission !== 'granted') {
       console.log('Notification permission not granted')
       return
     }
+
+    // Generate unique tag if not provided
+    const notificationTag = tag || `taskitup-${Date.now()}`
 
     console.log('Attempting to show notification:', title)
 
@@ -51,7 +54,7 @@ export const useNotifications = (settings, getOverdueTasks, getPendingTasks, use
           body,
           icon: '/icon-192.png',
           badge: '/icon-192.png',
-          tag,
+          tag: notificationTag,
           renotify: true,
           vibrate: [200, 100, 200]
         })
@@ -61,7 +64,7 @@ export const useNotifications = (settings, getOverdueTasks, getPendingTasks, use
         const notification = new Notification(title, {
           body,
           icon: '/icon-192.png',
-          tag
+          tag: notificationTag
         })
         notification.onclick = () => {
           window.focus()
@@ -96,24 +99,26 @@ export const useNotifications = (settings, getOverdueTasks, getPendingTasks, use
     const overdueTasks = getOverdueTasks()
     const pendingTasks = getPendingTasks()
 
-    // Priority 1: Overdue tasks
+    const now = Date.now()
+    let interval = settings.reminderInterval * 60 * 1000
+    if (settings.aggressiveMode) {
+      interval = interval / 2
+    }
+
+    // Priority 1: Overdue tasks - send notification for EACH overdue task
     if (overdueTasks.length > 0) {
       const lastOverdueReminder = localStorage.getItem(getKey('last_overdue_reminder'))
-      const now = Date.now()
-      let interval = settings.reminderInterval * 60 * 1000
-
-      if (settings.aggressiveMode) {
-        interval = interval / 2
-      }
-
+      
       if (!lastOverdueReminder || (now - parseInt(lastOverdueReminder)) >= interval) {
-        const taskNames = overdueTasks.slice(0, 2).map(t => t.name).join(', ')
-        const moreText = overdueTasks.length > 2 ? ` +${overdueTasks.length - 2} more` : ''
+        // Send one combined notification with all overdue tasks
+        const taskList = overdueTasks.map(t => `• ${t.name}`).join('\n')
         
         showNotification(
-          `⚠️ ${overdueTasks.length} overdue!`,
-          `${taskNames}${moreText}`,
-          'taskmeup-overdue'
+          `⚠️ ${overdueTasks.length} overdue task${overdueTasks.length > 1 ? 's' : ''}!`,
+          overdueTasks.length <= 3 
+            ? taskList 
+            : `${overdueTasks.slice(0, 3).map(t => t.name).join(', ')} +${overdueTasks.length - 3} more`,
+          `taskitup-overdue-${now}`
         )
         localStorage.setItem(getKey('last_overdue_reminder'), now.toString())
       }
@@ -123,17 +128,14 @@ export const useNotifications = (settings, getOverdueTasks, getPendingTasks, use
     // Priority 2: Regular pending tasks
     if (pendingTasks.length > 0) {
       const lastReminder = localStorage.getItem(getKey('last_reminder'))
-      const now = Date.now()
-      let interval = settings.reminderInterval * 60 * 1000
-
-      if (settings.aggressiveMode) {
-        interval = interval / 2
-      }
-
+      
       if (!lastReminder || (now - parseInt(lastReminder)) >= interval) {
         showNotification(
-          `${pendingTasks.length} task${pendingTasks.length > 1 ? 's' : ''} pending`,
-          pendingTasks.slice(0, 2).map(t => t.name).join(', ')
+          `📋 ${pendingTasks.length} task${pendingTasks.length > 1 ? 's' : ''} pending`,
+          pendingTasks.length <= 3
+            ? pendingTasks.map(t => t.name).join(', ')
+            : `${pendingTasks.slice(0, 3).map(t => t.name).join(', ')} +${pendingTasks.length - 3} more`,
+          `taskitup-pending-${now}`
         )
         localStorage.setItem(getKey('last_reminder'), now.toString())
       }

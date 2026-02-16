@@ -4,6 +4,7 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
+import { getMessaging, getToken, onMessage } from 'firebase/messaging'
 
 const firebaseConfig = {
   apiKey: "AIzaSyByxN1MhqL3XiKSJBsf4vZWW8K1I7x-F_k",
@@ -22,4 +23,15 @@ const app = initializeApp(firebaseConfig)
 export const auth = getAuth(app)
 export const db = getFirestore(app)
 
+// Initialize messaging (only in browser, not in service worker)
+let messaging = null
+if (typeof window !== 'undefined' && 'Notification' in window) {
+  try {
+    messaging = getMessaging(app)
+  } catch (error) {
+    console.log('Messaging not supported:', error)
+  }
+}
+
+export { messaging, getToken, onMessage }
 export default app

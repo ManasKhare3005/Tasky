@@ -19,14 +19,17 @@
 
 .auth-logo {
   font-family: 'Syne', sans-serif;
-  font-size: 48px;
+  font-size: 42px;
   font-weight: 800;
   text-align: center;
-  background: linear-gradient(135deg, var(--accent), #00ccff);
+  background: linear-gradient(135deg, var(--accent), var(--accent-light), var(--success));
+  background-size: 200% 200%;
+  animation: shimmer 3s ease infinite;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   margin-bottom: 8px;
+  letter-spacing: -1px;
 }
 
 .auth-tagline {
@@ -40,26 +43,29 @@
   display: flex;
   background: var(--bg-card);
   border-radius: var(--radius);
-  padding: 4px;
-  margin-bottom: 24px;
+  padding: 5px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-sm);
 }
 
 .auth-tab {
   flex: 1;
-  padding: 12px;
+  padding: 14px;
   background: transparent;
   border: none;
   color: var(--text-secondary);
   font-family: 'Space Mono', monospace;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
-  border-radius: 12px;
-  transition: all 0.2s ease;
+  border-radius: 15px;
+  transition: all 0.25s ease;
 }
 
 .auth-tab.active {
-  background: var(--accent);
-  color: var(--bg-primary);
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  color: white;
+  box-shadow: var(--shadow-glow);
 }
 
 .auth-form {
@@ -71,12 +77,21 @@
   font-size: 13px;
   margin-bottom: 16px;
   min-height: 20px;
+  padding: 10px 14px;
+  background: var(--danger-dim);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+}
+
+.auth-error:empty {
+  display: none;
 }
 
 .auth-divider {
   display: flex;
   align-items: center;
-  margin: 24px 0;
+  margin: 28px 0;
 }
 
 .auth-divider::before,
@@ -84,13 +99,15 @@
   content: '';
   flex: 1;
   height: 1px;
-  background: var(--bg-card);
+  background: linear-gradient(90deg, transparent, var(--bg-card-hover), transparent);
 }
 
 .auth-divider span {
   padding: 0 16px;
   color: var(--text-secondary);
   font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .social-buttons {
@@ -101,9 +118,9 @@
 
 .social-btn {
   width: 100%;
-  padding: 14px;
+  padding: 16px;
   background: var(--bg-card);
-  border: 1px solid var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: var(--radius-sm);
   color: var(--text-primary);
   font-family: 'Space Mono', monospace;
@@ -113,16 +130,20 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
+  box-shadow: var(--shadow-sm);
 }
 
 .social-btn:hover {
   border-color: var(--accent);
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
 }
 
 .social-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
 .social-btn.google {
@@ -134,4 +155,5 @@
 .social-btn.google:hover {
   border-color: #4285F4;
   background: #f8f9fa;
+  box-shadow: var(--shadow-md);
 }
