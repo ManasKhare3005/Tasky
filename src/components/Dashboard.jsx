@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useTasks } from '../hooks/useTasks'
 import { useSettings } from '../hooks/useSettings'
 import { useNotifications } from '../hooks/useNotifications'
@@ -11,29 +11,93 @@ import './Dashboard.css'
 
 const Dashboard = ({ user, onLogout }) => {
   const [showAddModal, setShowAddModal] = useState(false)
-  const [, setTick] = useState(0) // Force re-render trigger
+  const [currentTime, setCurrentTime] = useState(Date.now())
   
   const { 
     tasks, 
     completedToday, 
     streak,
     loading: tasksLoading,
-    getTodayTasks,
-    getOverdueTasks,
-    getPendingTasks,
-    isTaskOverdue,
     addTask,
     editTask,
     deleteTask, 
     toggleTask, 
-    getProgress,
     exportData 
   } = useTasks(user.id, user.isGuest)
   
   const { settings, updateSetting } = useSettings(user.id)
-  
-  const getOverdueTasksMemo = useCallback(() => getOverdueTasks(), [tasks, completedToday])
-  const getPendingTasksMemo = useCallback(() => getPendingTasks(), [tasks, completedToday])
+
+  // Auto-refresh every minute to update overdue status
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(Date.now())
+    }, 60000)
+
+    return () => clearInterval(interval)
+  }, [])
+
+  // Helper function to check if task is overdue
+  const isTaskOverdue = useCallback((task) => {
+    if (!task.time) return false
+    
+    const now = new Date()
+    const [hours, minutes] = task.time.split(':').map(Number)
+    const taskTime = new Date()
+    taskTime.setHours(hours, minutes, 0, 0)
+    
+    if (task.type === 'oneoff' && task.date) {
+      const taskDate = new Date(task.date)
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      taskDate.setHours(0, 0, 0, 0)
+      
+      if (taskDate < today) return true
+      if (taskDate > today) return false
+    }
+    
+    return now > taskTime
+  }, [currentTime]) // Recalculate when currentTime changes
+
+  // Get today's tasks
+  const todayTasks = useMemo(() => {
+    const todayKey = new Date().toISOString().split('T')[0]
+    return tasks.filter(task => {
+      if (task.type === 'daily') return true
+      if (task.type === 'oneoff') {
+        if (task.date === todayKey) return true
+        if (task.date && task.date < todayKey && !completedToday.has(task.id)) {
+          return true
+        }
+      }
+      return false
+    })
+  }, [tasks, completedToday, currentTime])
+
+  // Get overdue tasks
+  const overdueTasks = useMemo(() => {
+    return todayTasks.filter(task => {
+      if (completedToday.has(task.id)) return false
+      return isTaskOverdue(task)
+    })
+  }, [todayTasks, completedToday, isTaskOverdue, currentTime])
+
+  // Get pending tasks
+  const pendingTasks = useMemo(() => {
+    return todayTasks.filter(t => !completedToday.has(t.id))
+  }, [todayTasks, completedToday])
+
+  // Calculate progress
+  const progress = useMemo(() => {
+    const total = todayTasks.length
+    const completed = todayTasks.filter(t => completedToday.has(t.id)).length
+    const pending = total - completed
+    const percent = total > 0 ? Math.round((completed / total) * 100) : 0
+    return { total, completed, pending, percent }
+  }, [todayTasks, completedToday])
+
+  // Callbacks for notifications
+  const getOverdueTasksMemo = useCallback(() => overdueTasks, [overdueTasks])
+  const getPendingTasksMemo = useCallback(() => pendingTasks, [pendingTasks])
   
   const { permission, requestPermission, showNotification, checkAndNotify } = useNotifications(
     settings, 
@@ -42,22 +106,16 @@ const Dashboard = ({ user, onLogout }) => {
     user.id
   )
 
-  // Auto-refresh every minute to update overdue status
+  // Trigger notification check when overdue tasks change
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTick(t => t + 1) // Force re-render to update overdue status
-    }, 60000) // Every minute
-
-    return () => clearInterval(interval)
-  }, [])
+    if (overdueTasks.length > 0 && settings.notificationsEnabled && permission === 'granted') {
+      checkAndNotify()
+    }
+  }, [overdueTasks.length, currentTime])
 
   const handleTestNotification = () => {
     showNotification('Test Notification', 'TaskMeUp notifications are working! 🎉')
   }
-
-  const progress = getProgress()
-  const todayTasks = getTodayTasks()
-  const overdueTasks = getOverdueTasks()
 
   const getStatusMessage = () => {
     const { percent, pending } = progress
