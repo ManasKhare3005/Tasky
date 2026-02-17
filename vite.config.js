@@ -18,6 +18,7 @@ export default defineConfig({
         display: 'standalone',
         orientation: 'portrait',
         start_url: '/',
+        gcm_sender_id: "103953800507",
         icons: [
           {
             src: 'icon-192.png',
@@ -47,6 +48,12 @@ export default defineConfig({
               }
             }
           }
+        ],
+        // Import Firebase scripts into the service worker
+        importScripts: [
+          'https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js',
+          'https://www.gstatic.com/firebasejs/10.7.0/firebase-messaging-compat.js',
+          '/firebase-sw-additions.js'
         ]
       },
       devOptions: {
